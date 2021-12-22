@@ -2359,9 +2359,16 @@ FLAC__bool read_frame_header_(FLAC__StreamDecoder *decoder)
 			break;
 	}
 
+	if(decoder->private_->frame.header.bits_per_sample == 32 && decoder->private_->frame.header.channel_assignment != FLAC__CHANNEL_ASSIGNMENT_INDEPENDENT){
+		/* Decoder isn't equipped for 33-bit side frame */
+		is_unparseable = true;
+	}
+
+#ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 	/* check to make sure that reserved bit is 0 */
 	if(raw_header[3] & 0x01) /* MAGIC NUMBER */
 		is_unparseable = true;
+#endif
 
 	/* read the frame's starting sample number (or frame number as the case may be) */
 	if(
