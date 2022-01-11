@@ -2623,7 +2623,8 @@ FLAC__bool read_subframe_fixed_(FLAC__StreamDecoder *decoder, unsigned channel, 
 		case FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE2:
 			if(!FLAC__bitreader_read_raw_uint32(decoder->private_->input, &u32, FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE_ORDER_LEN))
 				return false; /* read_callback_ sets the state for us */
-			if(decoder->private_->frame.header.blocksize >> u32 < order) {
+			if((decoder->private_->frame.header.blocksize >> u32 < order) ||
+			   (decoder->private_->frame.header.blocksize % (1 << u32) > 0)) {
 				send_error_to_client_(decoder, FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC);
 				decoder->protected_->state = FLAC__STREAM_DECODER_SEARCH_FOR_FRAME_SYNC;
 				return true;
@@ -2712,7 +2713,8 @@ FLAC__bool read_subframe_lpc_(FLAC__StreamDecoder *decoder, unsigned channel, un
 		case FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE2:
 			if(!FLAC__bitreader_read_raw_uint32(decoder->private_->input, &u32, FLAC__ENTROPY_CODING_METHOD_PARTITIONED_RICE_ORDER_LEN))
 				return false; /* read_callback_ sets the state for us */
-			if(decoder->private_->frame.header.blocksize >> u32 < order) {
+			if((decoder->private_->frame.header.blocksize >> u32 < order) ||
+			   (decoder->private_->frame.header.blocksize % (1 << u32) > 0)) {
 				send_error_to_client_(decoder, FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC);
 				decoder->protected_->state = FLAC__STREAM_DECODER_SEARCH_FOR_FRAME_SYNC;
 				return true;
